@@ -23,7 +23,7 @@ let ping connection =
 let dummy_buffer = String.create 1024
 
 (* wait while remote host is surely closed *)
-let rec safe_close_in in_chan =
+let safe_close_in in_chan =
   let rec wait_safe_close sock =
     if Unix.read sock dummy_buffer 0 1024 = 0 then (* remote host succeccfully closed *)
       close_in in_chan
