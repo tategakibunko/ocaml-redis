@@ -19,9 +19,25 @@ let ping connection =
         Status("PONG") -> true |
         _ -> failwith "Did not recognize what I got back";;
 
+(** buffer only to confirm remote payload is surely empty. *)
+let dummy_buffer = String.create 1024
+
+(* wait while remote host is surely closed *)
+let rec safe_close_in in_chan =
+  let rec wait_safe_close sock =
+    if Unix.read sock dummy_buffer 0 1024 = 0 then (* remote host succeccfully closed *)
+      close_in in_chan
+    else wait_safe_close sock in
+  wait_safe_close (Unix.descr_of_in_channel in_chan)
+
 let quit connection =
-    (* QUIT, also should automatically close the connection *)
-    Connection.send_text "QUIT" connection;;
+  let (in_chan, out_chan) = connection in
+
+  (* QUIT, also should automatically close the connection *)
+  Connection.send_text "QUIT" connection;
+
+  (* without this, server causes file descr leaks!! *)
+  safe_close_in in_chan
 
 let auth password connection =
     (* AUTH *)
