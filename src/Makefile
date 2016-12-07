@@ -28,11 +28,10 @@ redis.cmxa:redis_common.cmx redis.cmi redis.cmx
 	$(OPT) -a -o $@ redis_common.cmx redis.cmx
 
 install:
-	mkdir /usr/local/lib/ocaml/site-lib/ocaml-redis
-	cp -f redis.cma redis.cmxa redis.a redis.cmi redis.o META /usr/local/lib/ocaml/site-lib/ocaml-redis/
+	ocamlfind install ocaml-redis redis.cma redis.cmxa redis.a redis.cmi redis.o META
 
 uninstall:
-	rm -rf /usr/local/lib/ocaml/site-lib/ocaml-redis
+	ocamlfind remove ocaml-redis
 
 reinstall:
 	make uninstall
